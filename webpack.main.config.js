@@ -4,6 +4,7 @@ module.exports = {
    * that runs in the main process.
    */
   entry: './src/main/main.ts',
+  target: 'electron-main',
   // Put your normal webpack config below here
   module: {
     rules: [
@@ -13,7 +14,10 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env', '@babel/preset-typescript'],
+            presets: [
+              ['@babel/preset-env', { targets: { electron: '28.0.0' } }],
+              '@babel/preset-typescript',
+            ],
           },
         },
       },
@@ -21,5 +25,9 @@ module.exports = {
   },
   resolve: {
     extensions: ['.js', '.ts', '.jsx', '.tsx', '.json'],
+  },
+  externals: {
+    electron: 'commonjs2 electron',
+    'better-sqlite3': 'commonjs2 better-sqlite3',
   },
 };
