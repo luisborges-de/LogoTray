@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogoTray - Instant Logo Access</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .showcase-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .showcase-content {
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .showcase-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+        }
+
+        .showcase-highlight {
+            color: rgb(20, 184, 166);
+        }
+
+        .showcase-description {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+        }
+
+        .menubar-hint {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 1rem;
+        }
+
+        .menubar-icon {
+            width: 24px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .menubar-text {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .features-list {
+            list-style: none;
+            margin-bottom: 1rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .feature-icon {
+            width: 16px;
+            height: 16px;
+            color: rgb(20, 184, 166);
+            flex-shrink: 0;
+        }
+
+        .showcase-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        .app-preview {
+            position: relative;
+            transform: scale(0.95);
+        }
+
+        .menubar-demo {
+            position: relative;
+        }
+
+        .menubar {
+            background: rgba(0, 0, 0, 0.8);
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px;
+            margin-bottom: 12px;
+            font-size: 11px;
+        }
+
+        .logobuddy-icon {
+            width: 16px;
+            height: 16px;
+            background: rgba(20, 184, 166, 0.2);
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        .logobuddy-icon svg {
+            width: 10px;
+            height: 10px;
+            color: rgb(20, 184, 166);
+        }
+
+        .clock {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+
+        .popover {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 20px;
+            color: #1a1a1a;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 320px;
+            position: relative;
+        }
+
+        .drag-cursor {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0;
+            left: 20px;
+            top: 200px;
+            animation: dragCursorAnimation 10s ease-out infinite;
+        }
+
+        .drag-cursor::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 10px solid rgba(255, 255, 255, 0.9);
+            border-right: 5px solid transparent;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            transform: rotate(-45deg);
+        }
+
+        .drag-cursor::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid rgba(0, 0, 0, 0.8);
+            border-right: 4px solid transparent;
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
+            transform: rotate(-45deg);
+        }
+
+        .dragged-logo {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0;
+            border-radius: 8px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            left: 20px;
+            top: 200px;
+            animation: draggedLogoAnimation 10s ease-out infinite;
+        }
+
+        @keyframes dragCursorAnimation {
+            0%, 70%, 100% { 
+                opacity: 0;
+            }
+            15% { 
+                opacity: 1;
+                transform: translate(0, 0);
+            }
+            20% { 
+                opacity: 1;
+                transform: translate(0, 0);
+            }
+            30% { 
+                opacity: 1;
+                transform: translate(0, 200px);
+            }
+            40% { 
+                opacity: 1;
+                transform: translate(0, 400px);
+            }
+            50% { 
+                opacity: 1;
+                transform: translate(0, 600px);
+            }
+            60% { 
+                opacity: 0.6;
+                transform: translate(0, 800px);
+            }
+        }
+
+        @keyframes draggedLogoAnimation {
+            0%, 70%, 100% { 
+                opacity: 0;
+                transform: translate(0, 0) scale(1);
+            }
+            18% { 
+                opacity: 0.9;
+                transform: translate(0, 0) scale(0.95);
+            }
+            20% { 
+                opacity: 0.9;
+                transform: translate(0, 0) scale(0.95);
+            }
+            30% { 
+                opacity: 0.9;
+                transform: translate(0, 200px) scale(0.85);
+            }
+            40% { 
+                opacity: 0.9;
+                transform: translate(0, 400px) scale(0.75);
+            }
+            50% { 
+                opacity: 0.9;
+                transform: translate(0, 600px) scale(0.65);
+            }
+            60% { 
+                opacity: 0.5;
+                transform: translate(0, 800px) scale(0.5);
+            }
+        }
+
+        .logo-card.drag-source {
+            animation: dragSourceHighlight 10s ease-out infinite;
+        }
+
+        @keyframes dragSourceHighlight {
+            0%, 70%, 100% {
+                transform: translateY(0px) scale(1);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                border-color: rgba(0, 0, 0, 0.08);
+                opacity: 1;
+            }
+            15%, 60% {
+                transform: translateY(-2px) scale(1.02);
+                box-shadow: 0 6px 20px rgba(20, 184, 166, 0.3);
+                border-color: rgba(20, 184, 166, 0.6);
+                opacity: 1;
+            }
+            18%, 55% {
+                transform: translateY(-2px) scale(1.02);
+                box-shadow: 0 6px 20px rgba(20, 184, 166, 0.3);
+                border-color: rgba(20, 184, 166, 0.6);
+                opacity: 0.4;
+            }
+        }
+
+        .app-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .app-title-accent {
+            color: rgb(20, 184, 166);
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .search-icon {
+            width: 14px;
+            height: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-right: 8px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            border: none;
+            background: none;
+            outline: none;
+            font-size: 13px;
+            color: #111827;
+        }
+
+        .recent-section {
+            margin-bottom: 8px;
+        }
+
+        .section-title {
+            font-size: 10px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .logo-grid {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .logo-card {
+            position: relative;
+            width: 55px;
+            height: 55px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .logo-card:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(20, 184, 166, 0.2);
+            border-color: rgba(20, 184, 166, 0.6);
+            z-index: 10;
+        }
+
+
+
+        .logo-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .source-badge {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            padding: 2px 3px;
+            border-radius: 3px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            font-size: 6px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .logo-card:hover .source-badge {
+            opacity: 1;
+        }
+
+        .app-controls {
+            display: flex;
+            justify-content: flex-end;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .control-hint {
+            padding: 4px 10px;
+            background: transparent;
+            border: none;
+            border-radius: 5px;
+            font-size: 10px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 5px rgba(20, 184, 166, 0.3);
+            }
+            to {
+                box-shadow: 0 0 15px rgba(20, 184, 166, 0.6);
+            }
+        }
+
+
+
+
+
+        .search-bar input {
+            flex: 1;
+            border: none;
+            background: none;
+            outline: none;
+            font-size: 13px;
+            color: #111827;
+        }
+
+        .search-text {
+            color: rgba(255, 255, 255, 0.9);
+            animation: typewriter 12s steps(20) infinite;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        @keyframes typewriter {
+            0%, 16.66% { content: "mcdonalds"; }
+            25%, 41.66% { content: "google"; }
+            50%, 66.66% { content: "cluely"; }
+            75%, 91.66% { content: "apple"; }
+            100% { content: "mcdonalds"; }
+        }
+
+        @keyframes typewriter {
+            0%, 12.5% { content: "apple"; }
+            25%, 37.5% { content: "microsoft"; }
+            50%, 62.5% { content: "google"; }
+            75%, 87.5% { content: "netflix"; }
+            100% { content: "apple"; }
+        }
+
+        .cursor {
+            color: rgba(255, 255, 255, 0.7);
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .drag-cursor {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0;
+            left: 16px;
+            top: 180px;
+            animation: dragAnimation 8s ease-in-out infinite;
+        }
+
+        .drag-cursor::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 10px solid #333;
+            border-right: 5px solid transparent;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            transform: rotate(-45deg);
+        }
+
+        .drag-cursor::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid white;
+            border-right: 4px solid transparent;
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
+            transform: rotate(-45deg);
+        }
+
+        .dragged-logo {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            left: 16px;
+            top: 180px;
+            animation: logodragAnimation 8s ease-in-out infinite;
+        }
+
+        @keyframes dragAnimation {
+            0%, 70%, 100% { 
+                opacity: 0;
+            }
+            12% { 
+                opacity: 1;
+                transform: translate(0, 0);
+            }
+            25% { 
+                opacity: 1;
+                transform: translate(-50px, 120px);
+            }
+            40% { 
+                opacity: 1;
+                transform: translate(-100px, 240px);
+            }
+            55% { 
+                opacity: 1;
+                transform: translate(-150px, 360px);
+            }
+            65% { 
+                opacity: 0.8;
+                transform: translate(-200px, 480px);
+            }
+        }
+
+        @keyframes logodragAnimation {
+            0%, 70%, 100% { 
+                opacity: 0;
+                transform: translate(0, 0) scale(1);
+            }
+            12% { 
+                opacity: 0.9;
+                transform: translate(0, 0) scale(1);
+            }
+            25% { 
+                opacity: 0.9;
+                transform: translate(-50px, 120px) scale(0.9);
+            }
+            40% { 
+                opacity: 0.9;
+                transform: translate(-100px, 240px) scale(0.8);
+            }
+            55% { 
+                opacity: 0.9;
+                transform: translate(-150px, 360px) scale(0.7);
+            }
+            65% { 
+                opacity: 0.6;
+                transform: translate(-200px, 480px) scale(0.6);
+            }
+        }
+
+        .supported-apps {
+            margin-top: 2rem;
+        }
+
+        .apps-title {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .apps-grid {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .app-logo-item {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .app-logo-item:hover {
+            transform: translateY(-2px) scale(1.1);
+        }
+
+        .app-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            object-fit: contain;
+        }
+
+        .drop-zone {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 2px dashed rgba(20, 184, 166, 0.6);
+            border-radius: 8px;
+            background: rgba(20, 184, 166, 0.1);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            animation: dropZoneAnimation 8s ease-in-out infinite;
+        }
+
+        @keyframes appShowcaseAnimation {
+            0%, 100% { 
+                opacity: 0.7;
+                transform: translateY(0px);
+            }
+            50% { 
+                opacity: 1;
+                transform: translateY(-4px);
+            }
+        }
+
+        @keyframes dropZoneAnimation {
+            0%, 70%, 100% { 
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            40%, 60% { 
+                opacity: 0.8;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            50% { 
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.1);
+                border-color: rgba(20, 184, 166, 1);
+                background: rgba(20, 184, 166, 0.2);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .showcase-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                padding: 1rem;
+            }
+
+            .showcase-title {
+                font-size: 2.2rem;
+            }
+
+            .showcase-description {
+                font-size: 1rem;
+            }
+
+            .features-list {
+                grid-template-columns: 1fr;
+            }
+
+            .app-preview {
+                transform: scale(0.8);
+            }
+
+            .apps-grid {
+                gap: 1rem;
+            }
+
+            .app-logo {
+                width: 40px;
+                height: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="showcase-container">
+        <div class="showcase-content">
+            <h1 class="showcase-title">
+                Instant logo access
+                <span class="showcase-highlight">right from your menubar</span>
+            </h1>
+            
+            <p class="showcase-description">
+                Search company logos and drag them directly into any app.
+            </p>
+
+            <ul class="features-list">
+                <li class="feature-item">
+                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    5+ logo sources
+                </li>
+                <li class="feature-item">
+                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M7 7h10v10"/>
+                        <path d="M7 17L17 7"/>
+                    </svg>
+                    Drag & drop ready
+                </li>
+                <li class="feature-item">
+                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"/>
+                    </svg>
+                    High-quality formats
+                </li>
+                <li class="feature-item">
+                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                    </svg>
+                    Instant access
+                </li>
+            </ul>
+            
+            <div class="menubar-hint">
+                <div class="menubar-icon">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                </div>
+                <span class="menubar-text">
+                    Find LogoTray in your menubar
+                </span>
+            </div>
+
+            <div class="supported-apps">
+                <div class="apps-title">Works with your favorite apps</div>
+                <div class="apps-grid">
+                    <div class="app-logo-item">
+                        <img class="app-logo" src="https://logo.clearbit.com/figma.com" alt="Figma">
+                    </div>
+                    <div class="app-logo-item">
+                        <img class="app-logo" src="https://img.icons8.com/color/96/microsoft-word-2019.png" alt="Microsoft Word">
+                    </div>
+                    <div class="app-logo-item">
+                        <img class="app-logo" src="https://logo.clearbit.com/notion.so" alt="Notion">
+                    </div>
+                    <div class="app-logo-item">
+                        <img class="app-logo" src="https://img.icons8.com/color/96/microsoft-powerpoint-2019.png" alt="PowerPoint">
+                    </div>
+                    <div class="app-logo-item">
+                        <img class="app-logo" src="https://img.icons8.com/color/96/google-slides.png" alt="Google Slides">
+                    </div>
+                    <div class="app-logo-item">
+                        <img class="app-logo" src="https://img.icons8.com/color/96/google-docs.png" alt="Google Docs">
+                    </div>
+                    <div class="app-logo-item">
+                        <img class="app-logo" src="https://logo.clearbit.com/canva.com" alt="Canva">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="showcase-visual">
+            <div class="app-preview">
+                <div class="menubar-demo">
+                    <div class="menubar">
+                        <div class="logobuddy-icon">
+                            <svg viewBox="0 0 16 16" fill="currentColor">
+                                <circle cx="8" cy="8" r="7.5" stroke="currentColor" stroke-width="1" fill="none"/>
+                                <circle cx="8" cy="4.5" r="0.8" fill="currentColor"/>
+                                <path d="M4.5 6.5 C4.5 4.8, 6 3.5, 8 3.5 C10 3.5, 11.5 4.8, 11.5 6.5" stroke="currentColor" stroke-width="1.2" fill="none"/>
+                                <rect x="4" y="6.5" width="8" height="0.8" rx="0.4" fill="currentColor"/>
+                            </svg>
+                        </div>
+                        <div class="clock">Mon Oct 13  1:31 AM</div>
+                    </div>
+                    <div class="popover">
+                        <div class="drag-cursor"></div>
+                        <div class="dragged-logo">
+                            <img src="https://img.logo.dev/mcdonalds.com?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ" alt="McDonald's Logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 6px;">
+                        </div>
+                        <div class="app-title">
+                            Logo<span class="app-title-accent">Tray</span>
+                        </div>
+                        <div class="search-bar">
+                            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/>
+                                <path d="m21 21-4.35-4.35"/>
+                            </svg>
+                            <div class="search-text">mcdonalds</div>
+                            <span class="cursor">|</span>
+                        </div>
+                        
+                        <div class="recent-section">
+                            <div class="section-title">Recent</div>
+                            <div class="logo-grid recent-logos">
+                                <div class="logo-card">
+                                    <img class="logo-image" src="https://img.logo.dev/microsoft.com?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ" alt="Microsoft">
+                                    <div class="source-badge">LOGO.DEV</div>
+                                </div>
+                                <div class="logo-card">
+                                    <img class="logo-image" src="https://img.logo.dev/google.com?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ" alt="Google">
+                                    <div class="source-badge">LOGO.DEV</div>
+                                </div>
+                                <div class="logo-card">
+                                    <img class="logo-image" src="https://img.logo.dev/netflix.com?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ" alt="Netflix">
+                                    <div class="source-badge">LOGO.DEV</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="recent-section">
+                            <div class="section-title">Search Results</div>
+                            <div class="logo-grid search-results">
+                                <div class="logo-card drag-source">
+                                    <img class="logo-image" src="https://img.logo.dev/mcdonalds.com?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ" alt="McDonalds">
+                                    <div class="source-badge">LOGO.DEV</div>
+                                </div>
+                                <div class="logo-card">
+                                    <img class="logo-image" src="https://logo.clearbit.com/mcdonalds.com" alt="McDonalds">
+                                    <div class="source-badge">CLEARBIT</div>
+                                </div>
+                                <div class="logo-card">
+                                    <img class="logo-image" src="https://icon.horse/icon/mcdonalds.com" alt="McDonalds">
+                                    <div class="source-badge">ICONHORSE</div>
+                                </div>
+                                <div class="logo-card">
+                                    <img class="logo-image" src="https://img.icons8.com/color/96/mcdonalds.png" alt="McDonalds">
+                                    <div class="source-badge">ICONS8</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="app-controls">
+                            <span class="control-hint">ESC</span>
+                            <span class="control-hint">⌘Q</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dynamic search text animation
+        const searchTexts = ['apple', 'microsoft', 'google', 'netflix'];
+        const searchElement = document.querySelector('.search-text');
+        const cursorElement = document.querySelector('.cursor');
+        let currentIndex = 0;
+        let currentText = '';
+        let isDeleting = false;
+
+        function typeWriter() {
+            const fullText = searchTexts[currentIndex];
+            
+            if (isDeleting) {
+                currentText = fullText.substring(0, currentText.length - 1);
+            } else {
+                currentText = fullText.substring(0, currentText.length + 1);
+            }
+            
+            searchElement.textContent = currentText;
+            
+            let typeSpeed = isDeleting ? 100 : 150;
+            
+            if (!isDeleting && currentText === fullText) {
+                typeSpeed = 2000; // Pause at end
+                isDeleting = true;
+            } else if (isDeleting && currentText === '') {
+                isDeleting = false;
+                currentIndex = (currentIndex + 1) % searchTexts.length;
+                typeSpeed = 500; // Pause before next word
+            }
+            
+            setTimeout(typeWriter, typeSpeed);
+        }
+
+        // Dynamic logo results
+        const logoSets = {
+            apple: [
+                { src: 'https://img.logo.dev/apple.com?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ', source: 'LOGO.DEV' },
+                { src: 'https://cdn.brandfetch.io/apple.com/w/400/h/400/theme/dark/icon.jpeg?c=1id4bDqx2b4Bxb_5rM', source: 'BRANDFETCH' },
+                { src: 'https://icon.horse/icon/apple.com', source: 'ICONHORSE' },
+                { src: 'https://logo.clearbit.com/apple.com', source: 'API NINJAS' }
+            ],
+            microsoft: [
+                { src: 'https://img.logo.dev/microsoft.com?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ', source: 'LOGO.DEV' },
+                { src: 'https://cdn.brandfetch.io/microsoft.com/w/400/h/400/theme/dark/icon.jpeg?c=1id4bDqx2b4Bxb_5rM', source: 'BRANDFETCH' },
+                { src: 'https://icon.horse/icon/microsoft.com', source: 'ICONHORSE' },
+                { src: 'https://logo.clearbit.com/microsoft.com', source: 'API NINJAS' }
+            ],
+            google: [
+                { src: 'https://img.logo.dev/google.com?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ', source: 'LOGO.DEV' },
+                { src: 'https://cdn.brandfetch.io/google.com/w/400/h/400/theme/dark/icon.jpeg?c=1id4bDqx2b4Bxb_5rM', source: 'BRANDFETCH' },
+                { src: 'https://icon.horse/icon/google.com', source: 'ICONHORSE' },
+                { src: 'https://logo.clearbit.com/google.com', source: 'API NINJAS' }
+            ],
+            netflix: [
+                { src: 'https://img.logo.dev/netflix.com?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ', source: 'LOGO.DEV' },
+                { src: 'https://cdn.brandfetch.io/netflix.com/w/400/h/400/theme/dark/icon.jpeg?c=1id4bDqx2b4Bxb_5rM', source: 'BRANDFETCH' },
+                { src: 'https://icon.horse/icon/netflix.com', source: 'ICONHORSE' },
+                { src: 'https://logo.clearbit.com/netflix.com', source: 'API NINJAS' }
+            ]
+        };
+
+        function updateLogos() {
+            const currentSearch = searchTexts[currentIndex];
+            const logos = logoSets[currentSearch];
+            const logoCards = document.querySelectorAll('.search-results .logo-card');
+            
+            if (logos && logoCards.length >= 4) {
+                logos.forEach((logo, index) => {
+                    if (logoCards[index]) {
+                        const img = logoCards[index].querySelector('.logo-image');
+                        const badge = logoCards[index].querySelector('.source-badge');
+                        if (img && badge) {
+                            img.src = logo.src;
+                            img.alt = currentSearch;
+                            badge.textContent = logo.source;
+                        }
+                    }
+                });
+            }
+        }
+
+        // Dynamic search text animation
+        const searchTexts = ['mcdonalds', 'google', 'cluely', 'apple'];
+        const searchElement = document.querySelector('.search-text');
+        const cursorElement = document.querySelector('.cursor');
+        let currentIndex = 0;
+        let currentText = '';
+        let isDeleting = false;
+
+        function typeWriter() {
+            const fullText = searchTexts[currentIndex];
+            
+            if (isDeleting) {
+                currentText = fullText.substring(0, currentText.length - 1);
+            } else {
+                currentText = fullText.substring(0, currentText.length + 1);
+            }
+            
+            searchElement.textContent = currentText;
+            
+            let typeSpeed = isDeleting ? 100 : 150;
+            
+            if (!isDeleting && currentText === fullText) {
+                typeSpeed = 2000; // Pause at end
+                isDeleting = true;
+            } else if (isDeleting && currentText === '') {
+                isDeleting = false;
+                currentIndex = (currentIndex + 1) % searchTexts.length;
+                typeSpeed = 500; // Pause before next word
+            }
+            
+            setTimeout(typeWriter, typeSpeed);
+        }
+
+        // Dynamic logo results
+        const logoSets = {
+            mcdonalds: [
+                { src: 'https://img.logo.dev/mcdonalds.com?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ', source: 'LOGO.DEV' },
+                { src: 'https://logo.clearbit.com/mcdonalds.com', source: 'CLEARBIT' },
+                { src: 'https://icon.horse/icon/mcdonalds.com', source: 'ICONHORSE' },
+                { src: 'https://img.icons8.com/color/96/mcdonalds.png', source: 'ICONS8' }
+            ],
+            google: [
+                { src: 'https://img.logo.dev/google.com?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ', source: 'LOGO.DEV' },
+                { src: 'https://logo.clearbit.com/google.com', source: 'CLEARBIT' },
+                { src: 'https://icon.horse/icon/google.com', source: 'ICONHORSE' },
+                { src: 'https://img.icons8.com/color/96/google-logo.png', source: 'ICONS8' }
+            ],
+            cluely: [
+                { src: 'https://img.logo.dev/cluely.com?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ', source: 'LOGO.DEV' },
+                { src: 'https://logo.clearbit.com/cluely.com', source: 'CLEARBIT' },
+                { src: 'https://icon.horse/icon/cluely.com', source: 'ICONHORSE' },
+                { src: 'https://cluely.com/favicon.ico', source: 'FAVICON' }
+            ],
+            apple: [
+                { src: 'https://img.logo.dev/apple.com?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ', source: 'LOGO.DEV' },
+                { src: 'https://logo.clearbit.com/apple.com', source: 'CLEARBIT' },
+                { src: 'https://icon.horse/icon/apple.com', source: 'ICONHORSE' },
+                { src: 'https://img.icons8.com/ios-filled/96/mac-os.png', source: 'ICONS8' }
+            ]
+        };
+
+        function updateLogos() {
+            const currentSearch = searchTexts[currentIndex];
+            const logos = logoSets[currentSearch];
+            const logoCards = document.querySelectorAll('.search-results .logo-card');
+            
+            if (logos && logoCards.length >= 4) {
+                logos.forEach((logo, index) => {
+                    if (logoCards[index]) {
+                        const img = logoCards[index].querySelector('.logo-image');
+                        const badge = logoCards[index].querySelector('.source-badge');
+                        if (img && badge) {
+                            img.src = logo.src;
+                            img.alt = currentSearch;
+                            badge.textContent = logo.source;
+                        }
+                    }
+                });
+            }
+        }
+
+        // Update dragged logo to match current search
+        function updateDraggedLogo() {
+            const currentSearch = searchTexts[currentIndex];
+            const draggedLogo = document.querySelector('.dragged-logo img');
+            if (draggedLogo && logoSets[currentSearch]) {
+                draggedLogo.src = logoSets[currentSearch][0].src;
+                draggedLogo.alt = currentSearch + ' Logo';
+            }
+        }
+
+        // Start animations
+        setTimeout(typeWriter, 1000);
+        
+        // Update logos when search changes
+        setInterval(() => {
+            updateLogos();
+            updateDraggedLogo();
+        }, 3000);
+    </script>
+</body>
+</html>

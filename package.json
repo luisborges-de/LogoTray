@@ -1,0 +1,85 @@
+{
+  "name": "logotray",
+  "version": "1.0.0",
+  "description": "A macOS menubar app for quickly finding and using company logos",
+  "main": "dist/main/main.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:main\" \"npm run dev:renderer\"",
+    "dev:main": "vite build --config vite.main.config.ts --mode development --watch",
+    "dev:renderer": "vite --config vite.renderer.config.ts",
+    "build": "npm run build:main && npm run build:renderer",
+    "build:main": "NODE_ENV=production vite build --config vite.main.config.ts",
+    "build:renderer": "NODE_ENV=production vite build --config vite.renderer.config.ts",
+    "build:analyze": "npm run build:renderer -- --mode analyze",
+    "electron": "electron .",
+    "electron:dev": "electron . --dev",
+    "electron:perf": "electron . --dev --enable-logging --js-flags=\"--expose-gc\"",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css,md}\"",
+    "type-check": "tsc --noEmit",
+    "test": "vitest --run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "perf:bundle": "npm run build:renderer && npx vite-bundle-analyzer dist/renderer",
+    "perf:memory": "node --expose-gc --inspect simple-test.js"
+  },
+  "keywords": [
+    "electron",
+    "menubar",
+    "logo",
+    "macos"
+  ],
+  "author": "LogoTray",
+  "license": "MIT",
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^20.10.0",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "@types/uuid": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "@vitest/ui": "^3.2.4",
+    "concurrently": "^8.2.2",
+    "electron": "^28.1.0",
+    "electron-builder": "^24.9.1",
+    "eslint": "^8.55.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "jsdom": "^27.0.0",
+    "prettier": "^3.1.1",
+    "terser": "^5.44.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10",
+    "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "axios": "^1.12.2",
+    "better-sqlite3": "^12.4.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "uuid": "^13.0.0"
+  },
+  "build": {
+    "appId": "com.logotray.app",
+    "productName": "LogoTray",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": "dmg"
+    }
+  }
+}

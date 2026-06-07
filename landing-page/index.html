@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogoTray - Instant Logo Access for macOS</title>
+    <meta name="description" content="The fastest way to find and use company logos on macOS. Search, drag, and drop logos directly into your work.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="../assets/tray-icon.svg" alt="LogoTray" class="nav-icon">
+                <span class="nav-title">Logo<span class="nav-title-accent">Tray</span></span>
+            </div>
+            <div class="nav-links">
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#download" class="nav-link">Download</a>
+                <a href="#support" class="nav-link">Support</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    Instant logo access
+                    <span class="hero-highlight">right from your menubar</span>
+                </h1>
+                <p class="hero-description">
+                    The fastest way to find and use company logos on macOS. Search by name or domain, 
+                    then drag logos directly into PowerPoint, Figma, or any app.
+                </p>
+                <div class="hero-actions">
+                    <a href="#download" class="btn btn-primary">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7,10 12,15 17,10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        Download LogoTray
+                    </a>
+                    <a href="#demo" class="btn btn-secondary">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5,3 19,12 5,21"/>
+                        </svg>
+                        Watch Demo
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">5+</span>
+                        <span class="stat-label">Logo Sources</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">1000s</span>
+                        <span class="stat-label">Company Logos</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">Native</span>
+                        <span class="stat-label">macOS App</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="app-preview">
+                    <div class="menubar-demo">
+                        <div class="menubar">
+                            <div class="menubar-left">
+                                <div class="logobuddy-icon active">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                        <!-- Outer circle -->
+                                        <circle cx="8" cy="8" r="7.5" stroke="currentColor" stroke-width="1" fill="none"/>
+                                        
+                                        <!-- Cloche dome -->
+                                        <circle cx="8" cy="4.5" r="0.8" fill="currentColor"/>
+                                        <path d="M4.5 6.5 C4.5 4.8, 6 3.5, 8 3.5 C10 3.5, 11.5 4.8, 11.5 6.5" stroke="currentColor" stroke-width="1.2" fill="none"/>
+                                        
+                                        <!-- Tray base -->
+                                        <rect x="4" y="6.5" width="8" height="0.8" rx="0.4" fill="currentColor"/>
+                                        
+                                        <!-- Hand/arm -->
+                                        <path d="M4.5 8.5 C4.5 8.5, 3.5 9, 3.5 10 C3.5 10.5, 4 11, 4.5 11 L6 11 C6.5 11, 7 10.5, 7 10 L7 9.5 C7 9, 6.5 8.5, 6 8.5 L4.5 8.5 Z" fill="currentColor"/>
+                                        
+                                        <!-- Forearm extension -->
+                                        <ellipse cx="9.5" cy="9.8" rx="2.5" ry="1" fill="currentColor"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="menubar-right">
+                                <div class="clock">Sat Oct 11  22:31</div>
+                            </div>
+                        </div>
+                        <div class="popover">
+                            <div class="app-title">
+                                Logo<span class="app-title-accent">Tray</span>
+                            </div>
+                            <div class="search-bar">
+                                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"/>
+                                    <path d="m21 21-4.35-4.35"/>
+                                </svg>
+                                <input type="text" placeholder="Search companies or paste domain..." value="apple" readonly>
+                            </div>
+                            <div class="logo-grid-container">
+                                <div class="logo-card" data-source="Logo.dev">
+                                    <img class="logo-image" src="https://img.logo.dev/apple.com?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ" alt="Apple Logo" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzAwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE4LjcxIDE5LjVjLS44MyAxLjI0LTEuNzEgMi40NS0zLjA1IDIuNDctMS4zNC4wMy0xLjc3LS43OS0zLjI5LS43OS0xLjUzIDAtMiAuNzctMy4yNy44Mi0xLjMxLjA1LTIuMy0xLjMyLTMuMTQtMi41M0M0LjI1IDE3IDIuOTQgMTIuNDUgNC43IDkuMzljLjg3LTEuNTIgMi40My0yLjQ4IDQuMTItMi41MSAxLjI4LS4wMiAyLjUuODcgMy4yOS44Ny43OCAwIDIuMjYtMS4wNyAzLjgxLS45MS42NS4wMyAyLjQ3LjI2IDMuNjQgMS45OC0uMDkuMDYtMi4xNyAxLjI4LTIuMTUgMy44MS4wMyAzLjAyIDIuNjUgNC4wMyAyLjY4IDQuMDQtLjAzLjA3LS40MiAxLjQ0LTEuMzggMi44M00xMyAzLjVjLjczLS44MyAxLjk0LTEuNDYgMi45NC0xLjUuMTMgMS4xNy0uMzQgMi4zNS0xLjA0IDMuMTktLjY5Ljg1LTEuODMgMS41MS0yLjk1IDEuNDItLjE1LTEuMTUuNDEtMi4zNSAxLjA1LTMuMTF6Ii8+Cjwvc3ZnPgo='">
+                                    <div class="source-badge">LOGO.DEV</div>
+                                    <div class="transparent-indicator"></div>
+                                    <div class="hover-tooltip">Drag to app or right-click</div>
+                                </div>
+                                <div class="logo-card" data-source="Brandfetch">
+                                    <img class="logo-image" src="https://cdn.brandfetch.io/apple.com/w/400/h/400/theme/dark/icon.jpeg?c=1id4bDqx2b4Bxb_5rM" alt="Apple Logo" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzAwN0FGRiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE4LjcxIDE5LjVjLS44MyAxLjI0LTEuNzEgMi40NS0zLjA1IDIuNDctMS4zNC4wMy0xLjc3LS43OS0zLjI5LS43OS0xLjUzIDAtMiAuNzctMy4yNy44Mi0xLjMxLjA1LTIuMy0xLjMyLTMuMTQtMi41M0M0LjI1IDE3IDIuOTQgMTIuNDUgNC43IDkuMzljLjg3LTEuNTIgMi40My0yLjQ4IDQuMTItMi41MSAxLjI4LS4wMiAyLjUuODcgMy4yOS44Ny43OCAwIDIuMjYtMS4wNyAzLjgxLS45MS42NS4wMyAyLjQ3LjI2IDMuNjQgMS45OC0uMDkuMDYtMi4xNyAxLjI4LTIuMTUgMy44MS4wMyAzLjAyIDIuNjUgNC4wMyAyLjY4IDQuMDQtLjAzLjA3LS40MiAxLjQ0LTEuMzggMi44M00xMyAzLjVjLjczLS44MyAxLjk0LTEuNDYgMi45NC0xLjUuMTMgMS4xNy0uMzQgMi4zNS0xLjA0IDMuMTktLjY5Ljg1LTEuODMgMS41MS0yLjk1IDEuNDItLjE1LTEuMTUuNDEtMi4zNSAxLjA1LTMuMTF6Ii8+Cjwvc3ZnPgo='">
+                                    <div class="source-badge">BRANDFETCH</div>
+                                    <div class="hover-tooltip">Drag to app or right-click</div>
+                                </div>
+                                <div class="logo-card" data-source="IconHorse">
+                                    <img class="logo-image" src="https://icon.horse/icon/apple.com" alt="Apple Logo" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzZCNzI4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE4LjcxIDE5LjVjLS44MyAxLjI0LTEuNzEgMi40NS0zLjA1IDIuNDctMS4zNC4wMy0xLjc3LS43OS0zLjI5LS43OS0xLjUzIDAtMiAuNzctMy4yNy44Mi0xLjMxLjA1LTIuMy0xLjMyLTMuMTQtMi41M0M0LjI1IDE3IDIuOTQgMTIuNDUgNC43IDkuMzljLjg3LTEuNTIgMi40My0yLjQ4IDQuMTItMi41MSAxLjI4LS4wMiAyLjUuODcgMy4yOS44Ny43OCAwIDIuMjYtMS4wNyAzLjgxLS45MS42NS4wMyAyLjQ3LjI2IDMuNjQgMS45OC0uMDkuMDYtMi4xNyAxLjI4LTIuMTUgMy44MS4wMyAzLjAyIDIuNjUgNC4wMyAyLjY4IDQuMDQtLjAzLjA3LS40MiAxLjQ0LTEuMzggMi44M00xMyAzLjVjLjczLS44MyAxLjk0LTEuNDYgMi45NC0xLjUuMTMgMS4xNy0uMzQgMi4zNS0xLjA0IDMuMTktLjY5Ljg1LTEuODMgMS41MS0yLjk1IDEuNDItLjE1LTEuMTUuNDEtMi4zNSAxLjA1LTMuMTF6Ii8+Cjwvc3ZnPgo='">
+                                    <div class="source-badge">ICONHORSE</div>
+                                    <div class="hover-tooltip">Drag to app or right-click</div>
+                                </div>
+                                <div class="logo-card" data-source="API Ninjas">
+                                    <img class="logo-image" src="https://logo.clearbit.com/apple.com" alt="Apple Logo" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzFGMjkzNyIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE4LjcxIDE5LjVjLS44MyAxLjI0LTEuNzEgMi40NS0zLjA1IDIuNDctMS4zNC4wMy0xLjc3LS43OS0zLjI5LS43OS0xLjUzIDAtMiAuNzctMy4yNy44Mi0xLjMxLjA1LTIuMy0xLjMyLTMuMTQtMi41M0M0LjI1IDE3IDIuOTQgMTIuNDUgNC43IDkuMzljLjg3LTEuNTIgMi40My0yLjQ4IDQuMTItMi41MSAxLjI4LS4wMiAyLjUuODcgMy4yOS44Ny43OCAwIDIuMjYtMS4wNyAzLjgxLS45MS42NS4wMyAyLjQ3LjI2IDMuNjQgMS45OC0uMDkuMDYtMi4xNyAxLjI4LTIuMTUgMy44MS4wMyAzLjAyIDIuNjUgNC4wMyAyLjY4IDQuMDQtLjAzLjA3LS40MiAxLjQ0LTEuMzggMi44M00xMyAzLjVjLjczLS44MyAxLjk0LTEuNDYgMi45NC0xLjUuMTMgMS4xNy0uMzQgMi4zNS0xLjA0IDMuMTktLjY5Ljg1LTEuODMgMS41MS0yLjk1IDEuNDItLjE1LTEuMTUuNDEtMi4zNSAxLjA1LTMuMTF6Ii8+Cjwvc3ZnPgo='">
+                                    <div class="source-badge">API NINJAS</div>
+                                    <div class="hover-tooltip">Drag to app or right-click</div>
+                                </div>
+                            </div>
+                            <div class="app-controls">
+                                <span class="control-hint">ESC</span>
+                                <span class="control-hint">⌘Q</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="features-container">
+            <div class="section-header">
+                <h2 class="section-title">Everything you need, nothing you don't</h2>
+                <p class="section-description">
+                    LogoTray lives in your menubar, ready whenever you need it
+                </p>
+            </div>
+            
+            <!-- Feature 1: Search -->
+            <div class="feature-showcase">
+                <div class="feature-content">
+                    <h3 class="feature-showcase-title">Type or paste, we'll find it</h3>
+                    <p class="feature-showcase-description">
+                        Search by company name or paste any domain URL. LogoTray instantly finds high-quality logos from multiple sources.
+                    </p>
+                </div>
+                <div class="feature-demo">
+                    <div class="demo-window">
+                        <div class="demo-search-bar">
+                            <svg class="demo-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/>
+                                <path d="m21 21-4.35-4.35"/>
+                            </svg>
+                            <input type="text" class="demo-input" placeholder="Search companies or paste domain..." value="apple.com">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 2: Drag & Drop -->
+            <div class="feature-showcase reverse">
+                <div class="feature-content">
+                    <h3 class="feature-showcase-title">Drag directly into your work</h3>
+                    <p class="feature-showcase-description">
+                        No downloads, no file management. Just drag logos straight into PowerPoint, Figma, Keynote, or any app.
+                    </p>
+                </div>
+                <div class="feature-demo">
+                    <div class="demo-window">
+                        <div class="demo-logo-grid-small">
+                            <div class="demo-logo-card dragging">
+                                <img src="https://logo.clearbit.com/mckinsey.com" alt="McKinsey" class="demo-real-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                <div class="demo-logo-placeholder" style="display:none;"></div>
+                            </div>
+                            <div class="demo-logo-card">
+                                <img src="https://logo.clearbit.com/bcg.com" alt="BCG" class="demo-real-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                <div class="demo-logo-placeholder" style="display:none;"></div>
+                            </div>
+                            <div class="demo-logo-card">
+                                <img src="https://logo.clearbit.com/goldmansachs.com" alt="Goldman Sachs" class="demo-real-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                <div class="demo-logo-placeholder" style="display:none;"></div>
+                            </div>
+                        </div>
+                        <div class="drag-indicator">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M7 7h10v10"/>
+                                <path d="M7 17L17 7"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 3: Multiple Sources -->
+            <div class="feature-showcase">
+                <div class="feature-content">
+                    <h3 class="feature-showcase-title">Best results from 5+ sources</h3>
+                    <p class="feature-showcase-description">
+                        We search Logo.dev, Brandfetch, Wikidata, and more simultaneously to find the perfect logo every time.
+                    </p>
+                </div>
+                <div class="feature-demo">
+                    <div class="demo-window">
+                        <div class="demo-logo-grid-sources">
+                            <div class="demo-logo-card-source">
+                                <img src="https://logo.clearbit.com/pwc.com" alt="PwC" class="demo-company-logo" onerror="this.style.display='none';">
+                            </div>
+                            <div class="demo-logo-card-source">
+                                <img src="https://logo.clearbit.com/mcdonalds.com" alt="McDonald's" class="demo-company-logo" onerror="this.style.display='none';">
+                            </div>
+                            <div class="demo-logo-card-source">
+                                <img src="https://logo.clearbit.com/kfc.com" alt="KFC" class="demo-company-logo" onerror="this.style.display='none';">
+                            </div>
+                            <div class="demo-logo-card-source">
+                                <img src="https://logo.clearbit.com/kpmg.com" alt="KPMG" class="demo-company-logo" onerror="this.style.display='none';">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Download Section -->
+    <section id="download" class="download">
+        <div class="download-container">
+            <div class="download-content">
+                <h2 class="download-title">Ready to speed up your workflow?</h2>
+                <p class="download-description">
+                    Join designers and content creators who save hours every week with instant logo access.
+                </p>
+                <div class="download-actions">
+                    <a href="#" class="btn btn-primary btn-large">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7,10 12,15 17,10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        Download LogoTray
+                    </a>
+                    <div class="download-info">
+                        <span class="download-version">Version 1.0.0</span>
+                        <span class="download-size">• 15 MB</span>
+                        <span class="download-requirement">• macOS 11+</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="../assets/tray-icon.svg" alt="LogoTray" class="footer-icon">
+                    <span class="footer-title">Logo<span class="footer-title-accent">Tray</span></span>
+                </div>
+                <div class="footer-links">
+                    <a href="#support" class="footer-link">Support</a>
+                    <a href="#privacy" class="footer-link">Privacy</a>
+                    <a href="#terms" class="footer-link">Terms</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="footer-copyright">© 2024 LogoTray. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
