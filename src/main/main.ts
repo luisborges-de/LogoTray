@@ -1,4 +1,5 @@
 import { app, BrowserWindow, ipcMain, Tray, Menu, nativeTheme, screen, nativeImage, Notification, dialog, clipboard } from 'electron';
+
 import { join } from 'path';
 import * as fs from 'fs';
 import * as https from 'https';
@@ -789,7 +790,7 @@ class AppLifecycle {
       
       try {
         // Create the menubar tray icon
-        menubarManager.createTray();
+        menubarManager.createelectron.Tray();
         
         // Show main window on first launch
         windowManager.showMainWindow();
