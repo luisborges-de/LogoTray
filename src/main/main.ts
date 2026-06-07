@@ -67,10 +67,17 @@ class WindowManager {
       },
     });
 
-    // Load the app - always use built files for now
-    const htmlPath = join(__dirname, '../renderer/src/renderer/index.html');
-    console.log('Loading HTML from:', htmlPath);
-    this.popoverWindow.loadFile(htmlPath);
+    // Load the app from webpack dev server (development) or built files (production)
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    if (isDevelopment) {
+      // In development, load from webpack dev server on port 3000
+      this.popoverWindow.loadURL('http://localhost:3000');
+      this.popoverWindow.webContents.openDevTools();
+    } else {
+      // In production, load from built files
+      const htmlPath = join(__dirname, '../renderer/index.html');
+      this.popoverWindow.loadFile(htmlPath);
+    }
 
     // Handle window closed
     this.popoverWindow.on('closed', () => {
@@ -119,8 +126,14 @@ class WindowManager {
     });
 
     // Load the showcase content
-    const htmlPath = join(__dirname, '../renderer/src/renderer/showcase.html');
-    this.mainWindow.loadFile(htmlPath);
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    if (isDevelopment) {
+      this.mainWindow.loadURL('http://localhost:3000/showcase.html');
+      this.mainWindow.webContents.openDevTools();
+    } else {
+      const htmlPath = join(__dirname, '../renderer/showcase.html');
+      this.mainWindow.loadFile(htmlPath);
+    }
 
     // Handle window closed
     this.mainWindow.on('closed', () => {
@@ -141,10 +154,10 @@ class WindowManager {
     }
     
     if (this.popoverWindow) {
-      console.log('Showing popover window');
+      safeLog('Showing popover window');
       this.popoverWindow.show();
       this.popoverWindow.focus();
-      console.log('Window bounds:', this.popoverWindow.getBounds());
+      safeLog('Window bounds:', this.popoverWindow.getBounds());
     }
   }
 
@@ -201,53 +214,53 @@ class MenubarManager {
 
   createTray(): void {
     try {
-      console.log('=== STARTING TRAY CREATION ===');
-      console.log('Platform:', process.platform);
-      console.log('Current working directory:', process.cwd());
-      console.log('__dirname:', __dirname);
+      safeLog('=== STARTING TRAY CREATION ===');
+      safeLog('Platform:', process.platform);
+      safeLog('Current working directory:', process.cwd());
+      safeLog('__dirname:', __dirname);
       
       // Create tray icon
       const icon = this.getTrayIconPath();
-      console.log('Icon created, isEmpty:', icon.isEmpty());
-      console.log('Icon size:', icon.getSize());
+      safeLog('Icon created, isEmpty:', icon.isEmpty());
+      safeLog('Icon size:', icon.getSize());
       
       if (icon.isEmpty()) {
         throw new Error('Icon is empty - this should not happen with programmatic icon');
       }
       
-      console.log('Creating Tray object...');
+      safeLog('Creating Tray object...');
       this.tray = new Tray(icon);
-      console.log('Tray object created successfully');
+      safeLog('Tray object created successfully');
 
       // Verify tray was created
       if (!this.tray) {
         throw new Error('Tray object is null');
       }
 
-      console.log('Tray created successfully, setting up handlers...');
+      safeLog('Tray created successfully, setting up handlers...');
 
       // Set up tray tooltip
       this.tray.setToolTip('LogoTray - Quick Logo Search');
-      console.log('Tooltip set');
+      safeLog('Tooltip set');
 
       // Handle tray icon click
       this.tray.on('click', (event, bounds) => {
-        console.log('Tray icon clicked at bounds:', bounds);
+        safeLog('Tray icon clicked at bounds:', bounds);
         this.togglePopover();
       });
 
       // Handle right-click for context menu
       this.tray.on('right-click', (event, bounds) => {
-        console.log('Tray icon right-clicked at bounds:', bounds);
+        safeLog('Tray icon right-clicked at bounds:', bounds);
         this.showContextMenu();
       });
 
       // Listen for system appearance changes
       this.setupAppearanceChangeListener();
       
-      console.log('Tray setup complete');
-      console.log('Tray bounds:', this.tray.getBounds());
-      console.log('Tray is destroyed?', this.tray.isDestroyed());
+      safeLog('Tray setup complete');
+      safeLog('Tray bounds:', this.tray.getBounds());
+      safeLog('Tray is destroyed?', this.tray.isDestroyed());
       
       // Show a notification to confirm tray creation
       if (Notification.isSupported()) {
@@ -257,12 +270,12 @@ class MenubarManager {
           silent: false
         });
         notification.show();
-        console.log('Notification shown');
+        safeLog('Notification shown');
       } else {
-        console.log('Notifications not supported');
+        safeLog('Notifications not supported');
       }
 
-      console.log('=== TRAY CREATION COMPLETE ===');
+      safeLog('=== TRAY CREATION COMPLETE ===');
 
     } catch (error) {
       console.error('=== TRAY CREATION FAILED ===');
@@ -272,11 +285,11 @@ class MenubarManager {
   }
 
   private getTrayIconPath(): Electron.NativeImage {
-    console.log('Creating tray icon...');
+    safeLog('Creating tray icon...');
     
     // Always use the programmatic icon for reliability
     const icon = this.createSimpleTrayIcon();
-    console.log('Created programmatic icon, size:', icon.getSize());
+    safeLog('Created programmatic icon, size:', icon.getSize());
     
     return icon;
   }
@@ -306,7 +319,7 @@ class MenubarManager {
       image.setTemplateImage(true);
     }
     
-    console.log('Created Unicode-style icon');
+    safeLog('Created Unicode-style icon');
     return image;
   }
 
@@ -329,7 +342,7 @@ class MenubarManager {
       image.setTemplateImage(true);
     }
     
-    console.log('Created fallback solid icon');
+    safeLog('Created fallback solid icon');
     return image;
   }
 
@@ -359,7 +372,7 @@ class MenubarManager {
       image.setTemplateImage(true);
     }
     
-    console.log('Created simple square tray icon with size:', image.getSize());
+    safeLog('Created simple square tray icon with size:', image.getSize());
     return image;
   }
 
@@ -376,19 +389,19 @@ class MenubarManager {
   showPopover(): void {
     if (!this.tray) return;
 
-    console.log('showPopover called');
+    safeLog('showPopover called');
     
     // Create window if it doesn't exist
     const window = this.windowManager.createPopoverWindow();
-    console.log('Window created:', !!window);
+    safeLog('Window created:', !!window);
     
     // Position the popover relative to the tray icon
     this.positionWindow();
-    console.log('Window positioned');
+    safeLog('Window positioned');
     
     // Show the window
     this.windowManager.showWindow();
-    console.log('Window show called');
+    safeLog('Window show called');
   }
 
   hidePopover(): void {
@@ -405,8 +418,8 @@ class MenubarManager {
     const trayBounds = this.tray.getBounds();
     const windowBounds = window.getBounds();
     
-    console.log('Tray bounds:', trayBounds);
-    console.log('Window bounds:', windowBounds);
+    safeLog('Tray bounds:', trayBounds);
+    safeLog('Window bounds:', windowBounds);
     
     // Calculate position - center horizontally under the tray icon
     let x = Math.round(trayBounds.x + (trayBounds.width / 2) - (windowBounds.width / 2));
@@ -418,7 +431,7 @@ class MenubarManager {
       y: trayBounds.y
     });
     
-    console.log('Display work area:', display.workArea);
+    safeLog('Display work area:', display.workArea);
 
     // Ensure window stays within screen bounds horizontally
     const minX = display.workArea.x + 10; // 10px margin from screen edge
@@ -430,7 +443,7 @@ class MenubarManager {
       y = Math.max(25, y); // Ensure it's below the menubar (typically 25px high)
     }
 
-    console.log('Final position:', { x, y });
+    safeLog('Final position:', { x, y });
     window.setPosition(x, y);
   }
 
@@ -581,7 +594,7 @@ class IPCHandler {
     // Drag and drop functionality
     ipcMain.handle('drag:createTempFile', async (_event, { url, filename, logoData }) => {
       try {
-        console.log('Creating temp file for drag operation:', filename);
+        safeLog('Creating temp file for drag operation:', filename);
         
         // Create temp directory if it doesn't exist
         const tempDir = join(os.tmpdir(), 'logobuddy-drag');
@@ -597,7 +610,7 @@ class IPCHandler {
         // Download and save the image
         await IPCHandler.downloadImage(url, tempFilePath);
         
-        console.log('Temp file created at:', tempFilePath);
+        safeLog('Temp file created at:', tempFilePath);
         return tempFilePath;
       } catch (error) {
         console.error('Failed to create temp file:', error);
@@ -650,7 +663,7 @@ class IPCHandler {
     // File save dialog
     ipcMain.handle('file:saveDialog', async (_event, { url, defaultName, logoData }) => {
       try {
-        console.log('Opening save dialog for:', defaultName);
+        safeLog('Opening save dialog for:', defaultName);
         
         const result = await dialog.showSaveDialog(windowManager.getMainWindow() || windowManager.getWindow() || undefined, {
           title: 'Save Logo',
@@ -668,7 +681,7 @@ class IPCHandler {
         // Download and save the image
         await IPCHandler.downloadImage(url, result.filePath);
         
-        console.log('File saved to:', result.filePath);
+        safeLog('File saved to:', result.filePath);
         return { success: true, filePath: result.filePath };
       } catch (error) {
         console.error('Failed to save file:', error);
@@ -825,7 +838,7 @@ class AppLifecycle {
 
 // Initialize the application
 try {
-  console.log('Initializing AppLifecycle...');
+  safeLog('Initializing AppLifecycle...');
   AppLifecycle.initialize();
   safeLog('AppLifecycle initialized successfully');
   
