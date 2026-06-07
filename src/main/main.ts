@@ -13,15 +13,9 @@ function safeLog(...args: any[]): void {
   try {
     console.log(...args);
   } catch (error: any) {
-    // Ignore EPIPE errors when logging
-    if (error?.code !== 'EPIPE') {
-      // Try to log the error, but don't fail if that also causes an error
-      try {
-        console.error('Logging error:', error);
-      } catch {
-        // Silent fail
-      }
-    }
+    // Silently ignore EPIPE and stdio errors - they're harmless
+    // Just continue without logging the error itself
+    return;
   }
 }
 
