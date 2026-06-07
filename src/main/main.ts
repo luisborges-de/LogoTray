@@ -780,16 +780,16 @@ class AppLifecycle {
 
     // App event handlers
     app.on('ready', () => {
-      console.log('App ready event fired');
-      
+      safeLog('App ready event fired');
+
       try {
         // Create the menubar tray icon
-        menubarManager.createelectron.Tray();
-        
-        // Show main window on first launch
-        windowManager.showMainWindow();
-        
-        console.log('LogoTray app ready');
+        menubarManager.createTray();
+
+        // Don't show main window for menubar app - just the tray
+        // Users can click the tray icon to interact
+
+        safeLog('LogoTray app ready');
       } catch (error) {
         console.error('Failed to create tray:', error);
       }
