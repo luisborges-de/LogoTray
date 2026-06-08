@@ -155,31 +155,20 @@ export class BrandfetchClient {
   /**
    * Generate domain variations to try
    */
-  private generateDomainVariations(domain: string, query: string): string[] {
+  private generateDomainVariations(domain: string, _query: string): string[] {
     const variations = new Set<string>();
-    
-    // Add the original domain
+
+    // Only use the resolved domain — no speculative TLD guessing.
+    // Trying .io/.org/.net produces too many false positives where brandfetch
+    // returns HTTP 200 with a blank placeholder image.
     variations.add(domain);
-    
-    // If query doesn't look like a domain, try common variations
-    if (!query.includes('.')) {
-      const cleanQuery = query.toLowerCase().replace(/\s+/g, '');
-      variations.add(`${cleanQuery}.com`);
-      variations.add(`${cleanQuery}.io`);
-      variations.add(`${cleanQuery}.org`);
-      variations.add(`${cleanQuery}.net`);
-    }
-    
-    // Try without www prefix
+
     if (domain.startsWith('www.')) {
       variations.add(domain.substring(4));
-    }
-    
-    // Try with www prefix if not present
-    if (!domain.startsWith('www.')) {
+    } else {
       variations.add(`www.${domain}`);
     }
-    
+
     return Array.from(variations);
   }
 

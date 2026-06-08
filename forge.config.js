@@ -26,6 +26,9 @@ module.exports = {
               html: './src/renderer/index.html',
               js: './src/renderer/main.tsx',
               name: 'main_window',
+              preload: {
+                js: './src/main/preload.ts',
+              },
             },
           ],
         },

@@ -126,7 +126,7 @@ export const LogoCard: React.FC<LogoCardProps> = ({
           ? '0 2px 8px rgba(0, 0, 0, 0.2)'
           : '0 2px 8px rgba(0, 0, 0, 0.06)',
         overflow: 'hidden',
-        display: imageError ? 'none' : 'flex',
+        display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         padding: '12px',
@@ -170,21 +170,44 @@ export const LogoCard: React.FC<LogoCardProps> = ({
         />
       )}
 
-      {/* Logo image */}
-      <img
-        src={logo.url}
-        alt={logo.companyName}
-        onError={() => setImageError(true)}
-        style={{
-          maxWidth: '100%',
-          maxHeight: '100%',
-          objectFit: 'contain',
-          position: 'relative',
-          zIndex: 1,
-          filter: isHovered ? 'brightness(1.1)' : 'brightness(1)',
-          transition: 'filter 0.2s ease',
-        }}
-      />
+      {/* Logo image or fallback */}
+      {imageError ? (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+          height: '100%',
+          fontSize: '18px',
+          fontWeight: '700',
+          color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.3)',
+          letterSpacing: '-0.05em',
+          userSelect: 'none',
+        }}>
+          {(logo.companyName || '?').charAt(0).toUpperCase()}
+        </div>
+      ) : (
+        <img
+          src={logo.url}
+          alt={logo.companyName}
+          onError={() => setImageError(true)}
+          onLoad={(e) => {
+            const img = e.currentTarget;
+            if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+              setImageError(true);
+            }
+          }}
+          style={{
+            maxWidth: '100%',
+            maxHeight: '100%',
+            objectFit: 'contain',
+            position: 'relative',
+            zIndex: 1,
+            filter: isHovered ? 'brightness(1.1)' : 'brightness(1)',
+            transition: 'filter 0.2s ease',
+          }}
+        />
+      )}
 
       {/* Source badge */}
       <div

@@ -1,122 +1,147 @@
 # LogoTray
 
-A native macOS menubar application for quickly finding and using company logos.
+A native macOS menu bar app that lets analysts search, preview, and drag company logos directly into PowerPoint, Keynote, and any other application — in seconds.
+
+---
+
+## Example Use Case
+
+Anyone who builds presentation decks professionally knows the pain: you need 15 company logos for a competitive landscape slide and spend 45 minutes on Google, downloading images, removing backgrounds, resizing, and cleaning up files — before you've even placed a single logo.
+
+LogoTray solves this entirely. It lives in your macOS menu bar and surfaces high-quality, transparent logos from multiple sources the moment you type a company name. You drag the logo directly into your slide. Done.
+
+---
+
+## Before LogoTray
+
+Building a single competitive landscape slide the traditional way:
+
+1. Open a browser and search "[Company] logo PNG transparent"
+2. Scroll past SEO spam to find a usable image
+3. Download the file, check the background, repeat if it's wrong
+4. Open an editor to remove the background (if needed)
+5. Import into PowerPoint, resize manually to match other logos
+6. Repeat this 10–20 times per slide
+
+A 10-logo market map takes 30–60 minutes of friction before any actual analysis begins.
+
+---
+
+## With LogoTray
+
+1. Click the LogoTray icon in the macOS menu bar
+2. Type the company name — results appear instantly
+3. Drag the logo directly into PowerPoint, Keynote, Figma, or any app
+4. Search the next company without leaving your slide
+
+A 10-logo market map takes under 2 minutes.
+
+---
+
+## Screenshot
+
+![LogoTray PowerPoint Workflow](assets/screenshots/logotray-ppt-demo.png)
+
+*Searching for OpenAI logos while working in PowerPoint — results are dragged directly onto the slide.*
+
+---
+
+## Who Uses This
+
+LogoTray is built for professionals who regularly produce polished presentation decks:
+
+| Team | Common Use Case |
+|---|---|
+| Investment Banking | Pitchbooks, competitive landscapes, sector overviews |
+| Private Equity | Deal memos, portfolio company slides, IC presentations |
+| Venture Capital | Market maps, startup ecosystem slides, LP reports |
+| Management Consulting | Strategy decks, industry overviews, client presentations |
+| Corporate Development | M&A target screens, integration presentations |
+| Corporate Strategy | Competitive intelligence decks, board presentations |
+
+---
+
+## Typical Slide Types
+
+- **Competitive landscape grids** — arrange logos of all competitors in a market
+- **Market maps** — position companies across two axes by segment or capability
+- **Industry overviews** — cover slides showing the key players in a space
+- **M&A deal books** — target company profiles with logos and branding
+- **Investment committee decks** — comps slides with peer company logos
+- **Startup ecosystem maps** — visualize a category from seed to growth stage
+- **Consulting strategy presentations** — vendor landscapes, partner ecosystems
+
+---
 
 ## Features
 
-- 🔍 **Quick Search** - Search for company logos by name or domain
-- 🎨 **Multiple Sources** - Aggregates results from Logo.dev, Brandfetch, API Ninjas, Wikidata, and IconHorse
-- 💾 **Smart Caching** - SQLite-based caching for instant results
-- 🖱️ **Drag & Drop** - Drag logos directly into other applications
-- ⌨️ **Keyboard Shortcuts** - Full keyboard navigation support (see [KEYBOARD_SHORTCUTS.md](KEYBOARD_SHORTCUTS.md))
-- ♿ **Accessible** - WCAG compliant with screen reader support
-- 🎭 **Glassmorphic UI** - Modern, beautiful interface that adapts to system theme
-- ⚡ **Performance Optimized** - Virtualized grids for large result sets
+- **Instant search** — results from Logo.dev, Brandfetch, and multiple other sources simultaneously
+- **Drag and drop** — drag any logo directly into PowerPoint, Keynote, Figma, Notion, or any app
+- **Recent logos** — your last 10 logos pinned at the top for quick re-use
+- **Favorites** — star logos you use repeatedly
+- **Multiple formats** — PNG with transparent background and SVG, ready to use at any size
+- **Dark mode** — adapts to your system appearance automatically
+- **Keyboard shortcuts** — `⌘K` to focus search, `ESC` to close, `⌘Q` to quit
+
+---
 
 ## Keyboard Shortcuts
 
-- **ESC** - Hide window
-- **⌘Q** - Quit application
-- **⌘K** - Focus search
-- **⌘⌫** - Clear search
+| Shortcut | Action |
+|---|---|
+| `ESC` | Hide window |
+| `⌘Q` | Quit application |
+| `⌘K` | Focus search input |
+| `⌘⌫` | Clear search |
+| `⌘⇧L` | Open LogoTray from anywhere |
 
-See [KEYBOARD_SHORTCUTS.md](KEYBOARD_SHORTCUTS.md) for complete documentation.
+---
 
 ## Development
 
 ### Prerequisites
 
 - Node.js 18+
-- npm or yarn
+- npm
 
 ### Setup
 
-1. Install dependencies:
 ```bash
 npm install
+npm start
 ```
 
-2. Start development server:
-```bash
-npm run dev
-```
-
-3. In another terminal, start Electron:
-```bash
-npm run electron:dev
-```
+See [SETUP.md](SETUP.md) for full setup instructions.
 
 ### Scripts
 
-- `npm run dev` - Start both main and renderer development servers
-- `npm run build` - Build for production
-- `npm run electron` - Start Electron app
-- `npm run lint` - Run ESLint
-- `npm run format` - Format code with Prettier
-- `npm run type-check` - Run TypeScript type checking
+```bash
+npm start          # Start development (Electron Forge)
+npm run package    # Package the app
+npm run make       # Build distributable
+npm run lint       # Run ESLint
+npm run format     # Format with Prettier
+npm run type-check # TypeScript check
+npm test           # Run tests
+```
 
 ### Project Structure
 
 ```
 src/
 ├── main/           # Electron main process
-│   ├── main.ts     # Main process entry point with menubar integration
-│   └── preload.ts  # Preload script for IPC communication
-├── renderer/       # React renderer process
-│   ├── App.tsx     # Main application component
-│   ├── components/ # React components (LogoGrid, LogoCard, etc.)
-│   └── hooks/      # Custom React hooks (useDebounce, etc.)
-├── services/       # Business logic and API services
-│   ├── api/        # API integration (Logo.dev, Brandfetch, etc.)
-│   ├── cache/      # SQLite caching system
-│   └── drag/       # Drag and drop handler
-└── types/          # TypeScript type definitions
+│   ├── main.ts     # Tray, window management, IPC
+│   └── preload.ts  # Secure IPC bridge
+├── renderer/       # React UI
+│   ├── App.tsx     # Root component with search logic
+│   └── components/ # LogoGrid, LogoCard, ContextMenu
+└── services/
+    ├── api/        # Logo.dev, Brandfetch, API Ninjas, Wikidata
+    ├── cache/      # SQLite caching layer
+    └── drag/       # Native drag and drop handler
 ```
 
-## Architecture
-
-LogoTray follows a modular architecture with clear separation of concerns:
-
-### Main Process
-- **MenubarManager** - Manages tray icon and popover window
-- **WindowManager** - Handles window creation and positioning
-- **IPCHandler** - Manages communication between main and renderer processes
-
-### Renderer Process
-- **React Components** - Modern, accessible UI components
-- **State Management** - Efficient state handling with hooks
-- **Performance Optimization** - Virtualized grids for large datasets
-
-### Service Layer
-- **APIManager** - Coordinates searches across multiple logo sources
-- **CacheManager** - SQLite-based caching for instant results
-- **DragHandler** - Native drag and drop functionality
-
-## Building
-
-```bash
-npm run build
-npm run dist
-```
-
-## Testing
-
-```bash
-npm test              # Run all tests
-npm run test:watch    # Run tests in watch mode
-npm run test:ui       # Open Vitest UI
-```
-
-## Accessibility
-
-LogoTray is built with accessibility in mind:
-- Full keyboard navigation support
-- Screen reader compatible with ARIA labels
-- High contrast mode support
-- Reduced motion support
-- WCAG 2.1 AA compliant
-
-See [KEYBOARD_SHORTCUTS.md](KEYBOARD_SHORTCUTS.md) for details.
+---
 
 ## License
 

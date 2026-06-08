@@ -17,6 +17,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+*.log
 
 # Runtime data
 pids
@@ -96,3 +97,13 @@ temp/
 
 # OS generated files
 Thumbs.db
+
+# Electron Forge webpack output
+.webpack/
+
+# Claude internal
+.claude/
+
+# Debug/test scripts
+test-*.js
+simple-test.js

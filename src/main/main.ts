@@ -1,6 +1,10 @@
-import { app, BrowserWindow, ipcMain, Tray, Menu, nativeTheme, screen, nativeImage, Notification, dialog, clipboard } from 'electron';
+import { app, BrowserWindow, ipcMain, Tray, Menu, nativeTheme, screen, nativeImage, Notification, dialog, clipboard, globalShortcut, session } from 'electron';
 
 import { join } from 'path';
+
+// Webpack injects these variables at build time
+declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
+declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 import * as fs from 'fs';
 import * as https from 'https';
 import * as http from 'http';
@@ -25,7 +29,11 @@ function safeLog(...args: any[]): void {
 //   app.quit();
 // }
 
-// Configure app as both dock and menubar application
+// Must be called before app is ready — makes this a proper macOS menubar-only app
+// without a Dock icon or activation on click
+if (process.platform === 'darwin') {
+  app.setActivationPolicy('accessory');
+}
 
 // Prevent multiple instances
 const gotTheLock = app.requestSingleInstanceLock();
@@ -59,25 +67,16 @@ class WindowManager {
       backgroundColor: 'rgba(0, 0, 0, 0)', // Fully transparent background
       vibrancy: process.platform === 'darwin' ? 'popover' : undefined, // macOS-specific vibrancy
       webPreferences: {
-        preload: join(__dirname, 'preload.js'),
+        preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
         nodeIntegration: false,
         contextIsolation: true,
-        backgroundThrottling: false, // Keep animations smooth when window is hidden
-        devTools: true, // Enable dev tools for debugging
+        backgroundThrottling: false,
+        devTools: false,
       },
     });
 
-    // Load the app from webpack dev server (development) or built files (production)
-    const isDevelopment = process.env.NODE_ENV === 'development';
-    if (isDevelopment) {
-      // In development, load from webpack dev server on port 3000
-      this.popoverWindow.loadURL('http://localhost:3000');
-      this.popoverWindow.webContents.openDevTools();
-    } else {
-      // In production, load from built files
-      const htmlPath = join(__dirname, '../renderer/index.html');
-      this.popoverWindow.loadFile(htmlPath);
-    }
+    // Load from webpack-generated entry point
+    this.popoverWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
     // Handle window closed
     this.popoverWindow.on('closed', () => {
@@ -118,22 +117,15 @@ class WindowManager {
       minimizable: true,
       maximizable: true,
       webPreferences: {
-        preload: join(__dirname, 'preload.js'),
+        preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
         nodeIntegration: false,
         contextIsolation: true,
-        devTools: false, // Disable dev tools for showcase
+        devTools: false,
       },
     });
 
-    // Load the showcase content
-    const isDevelopment = process.env.NODE_ENV === 'development';
-    if (isDevelopment) {
-      this.mainWindow.loadURL('http://localhost:3000/showcase.html');
-      this.mainWindow.webContents.openDevTools();
-    } else {
-      const htmlPath = join(__dirname, '../renderer/showcase.html');
-      this.mainWindow.loadFile(htmlPath);
-    }
+    // Load from webpack-generated entry point
+    this.mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
     // Handle window closed
     this.mainWindow.on('closed', () => {
@@ -239,7 +231,6 @@ class MenubarManager {
 
       safeLog('Tray created successfully, setting up handlers...');
 
-      // Set up tray tooltip
       this.tray.setToolTip('LogoTray - Quick Logo Search');
       safeLog('Tooltip set');
 
@@ -261,6 +252,8 @@ class MenubarManager {
       safeLog('Tray setup complete');
       safeLog('Tray bounds:', this.tray.getBounds());
       safeLog('Tray is destroyed?', this.tray.isDestroyed());
+      const displays = screen.getAllDisplays();
+      safeLog('All displays:', displays.map(d => ({ id: d.id, bounds: d.bounds, workArea: d.workArea, scaleFactor: d.scaleFactor })));
       
       // Show a notification to confirm tray creation
       if (Notification.isSupported()) {
@@ -286,11 +279,20 @@ class MenubarManager {
 
   private getTrayIconPath(): Electron.NativeImage {
     safeLog('Creating tray icon...');
-    
-    // Always use the programmatic icon for reliability
+
+    // Try loading from the real PNG file first
+    const iconPath = join(app.getAppPath(), 'assets', 'tray-icon.png');
+    safeLog('Loading icon from path:', iconPath);
+    const fileIcon = nativeImage.createFromPath(iconPath);
+    if (!fileIcon.isEmpty()) {
+      fileIcon.setTemplateImage(true);
+      safeLog('Loaded icon from file, size:', fileIcon.getSize());
+      return fileIcon;
+    }
+
+    safeLog('File icon not found, falling back to programmatic icon');
     const icon = this.createSimpleTrayIcon();
     safeLog('Created programmatic icon, size:', icon.getSize());
-    
     return icon;
   }
 
@@ -347,32 +349,36 @@ class MenubarManager {
   }
 
   private createSimpleTrayIcon(): Electron.NativeImage {
-    // Create a simple, highly visible icon for macOS menubar
-    const size = 16; // Standard macOS menubar icon size
-    const canvas = Buffer.alloc(size * size * 4); // RGBA
-    
-    // Fill with transparent background
-    canvas.fill(0);
-    
-    // Create a simple filled square that should be very visible
-    for (let y = 2; y < 14; y++) {
-      for (let x = 2; x < 14; x++) {
-        const idx = (y * size + x) * 4;
-        canvas[idx] = 0;       // R - black
-        canvas[idx + 1] = 0;   // G - black  
-        canvas[idx + 2] = 0;   // B - black
-        canvas[idx + 3] = 255; // A - fully opaque
+    // macOS menubar icons: 22x22 points. Supply @2x (44x44 px) for Retina.
+    const size = 44;
+    const canvas = Buffer.alloc(size * size * 4);
+    canvas.fill(0); // transparent background
+
+    // Draw a simple grid/logo mark: two rows of two squares
+    const pad = 8, sq = 11, gap = 6;
+    const rects = [
+      [pad, pad, sq, sq],
+      [pad + sq + gap, pad, sq, sq],
+      [pad, pad + sq + gap, sq, sq],
+      [pad + sq + gap, pad + sq + gap, sq, sq],
+    ];
+
+    for (const [rx, ry, rw, rh] of rects) {
+      for (let py = ry; py < ry + rh; py++) {
+        for (let px = rx; px < rx + rw; px++) {
+          const idx = (py * size + px) * 4;
+          canvas[idx] = 0;       // R
+          canvas[idx + 1] = 0;   // G
+          canvas[idx + 2] = 0;   // B
+          canvas[idx + 3] = 255; // A
+        }
       }
     }
-    
+
     const image = nativeImage.createFromBuffer(canvas, { width: size, height: size });
-    
-    // On macOS, mark as template for automatic appearance handling
-    if (process.platform === 'darwin') {
-      image.setTemplateImage(true);
-    }
-    
-    safeLog('Created simple square tray icon with size:', image.getSize());
+    image.setTemplateImage(true); // macOS automatically flips for dark/light mode
+
+    safeLog('Created tray icon, size:', image.getSize());
     return image;
   }
 
@@ -796,11 +802,23 @@ class AppLifecycle {
       safeLog('App ready event fired');
 
       try {
-        // Create the menubar tray icon
+        // Allow external images — override restrictive CSP from webpack dev server headers
+        session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+          callback({
+            responseHeaders: {
+              ...details.responseHeaders,
+              'Content-Security-Policy': [
+                "default-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src * data: blob:; connect-src * ws: wss:; media-src * data: blob:;"
+              ],
+            },
+          });
+        });
+
         menubarManager.createTray();
 
-        // Don't show main window for menubar app - just the tray
-        // Users can click the tray icon to interact
+        globalShortcut.register('CommandOrControl+Shift+L', () => {
+          menubarManager.showPopover();
+        });
 
         safeLog('LogoTray app ready');
       } catch (error) {
@@ -823,13 +841,8 @@ class AppLifecycle {
       windowManager.showWindow();
     });
 
-    // Handle app activation (macOS) - show main window when dock icon is clicked
-    app.on('activate', () => {
-      windowManager.showMainWindow();
-    });
-
-    // Handle before quit
     app.on('before-quit', () => {
+      globalShortcut.unregisterAll();
       menubarManager.destroy();
       windowManager.destroyWindow();
     });
